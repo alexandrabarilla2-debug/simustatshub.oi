@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Statistic Simulation</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#eef2f7;
+    margin:0;
+}
+
+header{
+    background:#2c3e50;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+section{
+    background:white;
+    margin:20px;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+h2{
+    color:#2c3e50;
+}
+
+button{
+    padding:8px 14px;
+    margin-top:10px;
+    cursor:pointer;
+    border:none;
+    border-radius:5px;
+    background:#3498db;
+    color:white;
+}
+
+input{
+    padding:6px;
+    margin:4px;
+}
+
+canvas{
+    margin-top:20px;
+}
+
+/* COIN STYLE */
+.coin{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:gold;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:22px;
+    font-weight:bold;
+    margin:10px auto;
+    transition:transform 1s;
+}
+
+/* DICE STYLE */
+.dice{
+    width:100px;
+    height:100px;
+    background:white;
+    border:3px solid black;
+    border-radius:10px;
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-template-rows: repeat(3,1fr);
+    margin:10px auto;
+    transition:transform 0.6s;
+}
+
+.dot{
+    width:20px;
+    height:20px;
+    background:black;
+    border-radius:50%;
+    align-self:center;
+    justify-self:center;
+}
+
+.hidden{visibility:hidden;}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>SimuStats Hub
+</h1>
+<p>Explore Statistical Concepts Through Simulation</p>
+</header>
+
+<!-- ===================== -->
+<!-- STATISTICAL VARIABLES -->
+<!-- ===================== -->
+
+<section>
+<h2>Statistical Variables – Bar Graph Simulation</h2>
+
+<input type="text" id="labelInput" placeholder="Label">
+<input type="number" id="valueInput" placeholder="Value">
+<button onclick="addBarData()">Add Data</button>
+
+<canvas id="barChart"></canvas>
+
+</section>
+
+<!-- ===================== -->
+<!-- RANDOM VARIABLES -->
+<!-- ===================== -->
+
+<section>
+<h2>Random Variables – Coin Toss</h2>
+
+<div class="coin" id="coin">HEAD</div>
+<p id="percentDisplay">Heads: 0% | Tails: 0%</p>
+<button onclick="tossCoin()">Toss Coin</button>
+
+<h3>Dice Roll</h3>
+
+<div class="dice" id="dice"></div>
+<button onclick="rollDice()">Roll Dice</button>
+
+</section>
+
+<!-- ===================== -->
+<!-- SIMPLE LINEAR REGRESSION -->
+<!-- ===================== -->
+
+<section>
+<h2>Simple Linear Regression</h2>
+
+<input type="number" id="xVal" placeholder="X value">
+<input type="number" id="yVal" placeholder="Y value">
+<button onclick="addPoint()">Add Point</button>
+
+<canvas id="scatterChart"></canvas>
+
+</section>
+
+<!-- ===================== -->
+<!-- HYPOTHESIS TESTING -->
+<!-- ===================== -->
+
+<section>
+<h2>Statistical Hypothesis Testing (Z-Test)</h2>
+
+<input type="number" id="mean" placeholder="Sample Mean">
+<input type="number" id="popMean" placeholder="Population Mean">
+<input type="number" id="sd" placeholder="Std Dev">
+<input type="number" id="n" placeholder="Sample Size">
+<button onclick="calculateZ()">Compute</button>
+
+<p id="zResult"></p>
+
+</section>
+
+<!-- ===================== -->
+<!-- TEST OF RELATIONSHIP -->
+<!-- ===================== -->
+
+<section>
+<h2>Test of Relationship (Correlation)</h2>
+
+<input type="number" id="xRel" placeholder="X value">
+<input type="number" id="yRel" placeholder="Y value">
+<button onclick="addRel()">Add Pair</button>
+
+<p id="corrResult"></p>
+
+</section>
+
+<!-- ===================== -->
+<!-- PARAMETRIC TEST -->
+<!-- ===================== -->
+
+<section>
+<h2>Parametric Test – Independent T-Test</h2>
+
+<input type="number" id="g1" placeholder="Group 1 value">
+<input type="number" id="g2" placeholder="Group 2 value">
+<button onclick="addGroups()">Add Data</button>
+<button onclick="computeT()">Compute T</button>
+
+<p id="tResult"></p>
+
+</section>
+
+<script>
+
+/* ========================= */
+/* BAR GRAPH (Unlimited digits allowed) */
+/* ========================= */
+
+let barLabels=[];
+let barValues=[];
+
+const barChart=new Chart(document.getElementById("barChart"),{
+type:'bar',
+data:{
+labels:barLabels,
+datasets:[{
+label:'Data',
+data:barValues,
+backgroundColor:'rgba(52,152,219,0.7)'
+}]
+}
+});
+
+function addBarData(){
+let label=document.getElementById("labelInput").value;
+let value=parseFloat(document.getElementById("valueInput").value);
+
+if(label!=="" && !isNaN(value)){
+barLabels.push(label);
+barValues.push(value);
+barChart.update();
+}
+}
+
+/* ========================= */
+/* COIN WITH PERCENTAGE */
+/* ========================= */
+
+let heads=0;
+let tails=0;
+
+function tossCoin(){
+let coin=document.getElementById("coin");
+
+coin.style.transform="rotateY(720deg)";
+
+setTimeout(()=>{
+let result=Math.random()<0.5?"HEAD":"TAIL";
+coin.innerHTML=result;
+
+if(result==="HEAD") heads++;
+else tails++;
+
+let total=heads+tails;
+let headPercent=((heads/total)*100).toFixed(0);
+let tailPercent=((tails/total)*100).toFixed(0);
+
+document.getElementById("percentDisplay").innerText=
+"Heads: "+headPercent+"% | Tails: "+tailPercent+"%";
+
+coin.style.transform="rotateY(0deg)";
+},1000);
+}
+
+/* ========================= */
+/* DICE THROW */
+/* ========================= */
+
+function rollDice(){
+let dice=document.getElementById("dice");
+dice.style.transform="rotate(360deg)";
+setTimeout(()=>{
+dice.innerHTML="";
+let num=Math.floor(Math.random()*6)+1;
+showDice(num);
+dice.style.transform="rotate(0deg)";
+},600);
+}
+
+function showDice(num){
+let positions={
+1:[4],
+2:[0,8],
+3:[0,4,8],
+4:[0,2,6,8],
+5:[0,2,4,6,8],
+6:[0,2,3,5,6,8]
+};
+
+for(let i=0;i<9;i++){
+let dot=document.createElement("div");
+dot.className="dot";
+if(!positions[num].includes(i)){
+dot.classList.add("hidden");
+}
+dice.appendChild(dot);
+}
+}
+
+/* ========================= */
+/* LINEAR REGRESSION */
+/* ========================= */
+
+let points=[];
+
+const scatterChart=new Chart(document.getElementById("scatterChart"),{
+type:'scatter',
+data:{
+datasets:[{
+label:'Points',
+data:points,
+backgroundColor:'red'
+}]
+}
+});
+
+function addPoint(){
+let x=parseFloat(document.getElementById("xVal").value);
+let y=parseFloat(document.getElementById("yVal").value);
+if(!isNaN(x)&&!isNaN(y)){
+points.push({x:x,y:y});
+scatterChart.update();
+}
+}
+
+/* ========================= */
+/* Z TEST */
+/* ========================= */
+
+function calculateZ(){
+let mean=parseFloat(document.getElementById("mean").value);
+let popMean=parseFloat(document.getElementById("popMean").value);
+let sd=parseFloat(document.getElementById("sd").value);
+let n=parseFloat(document.getElementById("n").value);
+
+let z=(mean-popMean)/(sd/Math.sqrt(n));
+document.getElementById("zResult").innerText="Z-score: "+z.toFixed(3);
+}
+
+/* ========================= */
+/* CORRELATION */
+/* ========================= */
+
+let relX=[], relY=[];
+
+function addRel(){
+let x=parseFloat(document.getElementById("xRel").value);
+let y=parseFloat(document.getElementById("yRel").value);
+
+if(!isNaN(x)&&!isNaN(y)){
+relX.push(x);
+relY.push(y);
+
+let n=relX.length;
+let sumX=relX.reduce((a,b)=>a+b,0);
+let sumY=relY.reduce((a,b)=>a+b,0);
+let sumXY=relX.reduce((a,b,i)=>a+b*relY[i],0);
+let sumX2=relX.reduce((a,b)=>a+b*b,0);
+let sumY2=relY.reduce((a,b)=>a+b*b,0);
+
+let r=(n*sumXY-sumX*sumY)/
+Math.sqrt((n*sumX2-sumX**2)*(n*sumY2-sumY**2));
+
+document.getElementById("corrResult").innerText=
+"Correlation (r): "+r.toFixed(3);
+}
+}
+
+/* ========================= */
+/* T TEST */
+/* ========================= */
+
+let group1=[], group2=[];
+
+function addGroups(){
+let g1=parseFloat(document.getElementById("g1").value);
+let g2=parseFloat(document.getElementById("g2").value);
+if(!isNaN(g1)&&!isNaN(g2)){
+group1.push(g1);
+group2.push(g2);
+}
+}
+
+function computeT(){
+let mean1=group1.reduce((a,b)=>a+b,0)/group1.length;
+let mean2=group2.reduce((a,b)=>a+b,0)/group2.length;
+
+let var1=group1.reduce((a,b)=>a+(b-mean1)**2,0)/(group1.length-1);
+let var2=group2.reduce((a,b)=>a+(b-mean2)**2,0)/(group2.length-1);
+
+let t=(mean1-mean2)/
+Math.sqrt(var1/group1.length + var2/group2.length);
+
+document.getElementById("tResult").innerText=
+"T-value: "+t.toFixed(3);
+}
+
+</script>
+
+</body>
+</html>
